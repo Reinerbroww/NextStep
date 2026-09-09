@@ -12,6 +12,10 @@ export const metadata: Metadata = {
   title: "NextStep",
   description:
     "Know what you want. Know what to do. A calm space to figure out your next step.",
+  icons: {
+    icon: "/logo.png",
+    apple: "/logo.png",
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

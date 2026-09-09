@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import Button from "@/components/Button";
 import LanguageToggle from "@/components/LanguageToggle";
@@ -31,11 +32,15 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     <div className="flex min-h-full flex-1 flex-col">
       <header className="h-16 border-b border-border">
         <nav className="mx-auto flex h-full w-full max-w-[1200px] items-center justify-between px-4 sm:px-6">
-          <Link
-            href="/"
-            className="text-base font-bold tracking-tight text-foreground"
-          >
-            {t.nav.logo}
+          <Link href="/" className="flex h-8 items-center">
+            <Image
+              src="/logo.png"
+              alt="NextStep"
+              width={32}
+              height={32}
+              className="h-8 w-auto"
+              priority
+            />
           </Link>
           <div className="hidden items-center gap-8 sm:flex">
             <NavLink href="/start" label={t.nav.start} />

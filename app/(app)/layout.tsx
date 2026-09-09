@@ -32,13 +32,13 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     <div className="flex min-h-full flex-1 flex-col">
       <header className="h-16 border-b border-border">
         <nav className="mx-auto flex h-full w-full max-w-[1200px] items-center justify-between px-4 sm:px-6">
-          <Link href="/" className="flex h-8 items-center">
+          <Link href="/" className="flex h-12 items-center transition-opacity hover:opacity-80">
             <Image
               src="/logo.png"
               alt="NextStep"
-              width={32}
-              height={32}
-              className="h-8 w-auto"
+              width={48}
+              height={48}
+              className="h-12 w-auto"
               priority
             />
           </Link>

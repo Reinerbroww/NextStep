@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
 import { transcribeAudio, parseJson } from "@/lib/ai";
 
+// Transcription (audio to Gemini) can take a while; keep it below Vercel's cap.
+export const maxDuration = 60;
+export const runtime = "nodejs";
+
 type TranscribeResult = {
   text: string;
 };

@@ -2,6 +2,10 @@ import { NextResponse } from "next/server";
 import { generateFromPrompt, parseJson } from "@/lib/ai";
 import { detectLanguage, languageCodeToName } from "@/lib/language";
 
+// Gemini calls can take 10-20s; keep the function below Vercel's Hobby cap.
+export const maxDuration = 60;
+export const runtime = "nodejs";
+
 type PlanStep = {
   number: string;
   title: string;

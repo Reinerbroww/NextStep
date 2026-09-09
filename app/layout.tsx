@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   description:
     "Know what you want. Know what to do. A calm space to figure out your next step.",
   icons: {
-    icon: "/logo.png",
+    icon: "/favicon.png",
     apple: "/logo.png",
   },
 };

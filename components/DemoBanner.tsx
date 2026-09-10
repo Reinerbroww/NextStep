@@ -103,3 +103,30 @@ export function DemoToggle() {
     </button>
   );
 }
+
+export function DemoExamples({ onSelect }: { onSelect: (text: string) => void }) {
+  const { t } = useTranslation();
+  const { demo } = useDemoMode();
+
+  if (!demo) return null;
+
+  return (
+    <div className="mt-8">
+      <p className="text-xs font-semibold uppercase tracking-widest text-muted">
+        {t.demo.examplesTitle}
+      </p>
+      <div className="mt-3 flex flex-col gap-2">
+        {t.demo.examples.map((example) => (
+          <button
+            key={example}
+            data-demo-example="true"
+            onClick={() => onSelect(example)}
+            className="min-h-11 rounded-md border border-border bg-background px-4 py-3 text-left text-sm leading-6 text-secondary transition-colors hover:border-primary hover:text-primary"
+          >
+            {example}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}

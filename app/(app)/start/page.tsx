@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { saveFlow, loadFlow } from "@/lib/flow";
+import { DemoExamples } from "@/components/DemoBanner";
 import Spinner from "@/components/Spinner";
 import VoiceInput from "@/components/VoiceInput";
 import { useTranslation } from "@/lib/i18n";
@@ -86,6 +87,8 @@ export default function StartPage() {
         placeholder={t.start.placeholder}
         className="mt-3 min-h-[140px] w-full resize-none rounded-md border border-border bg-background p-4 text-base leading-6 text-foreground placeholder:text-muted focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
       />
+
+      <DemoExamples onSelect={setText} />
 
       {error ? <p className="mt-3 text-sm text-danger">{error}</p> : null}
 

@@ -120,6 +120,23 @@ export const translations = {
       notSupported:
         "Voice input is not available here. Use Chrome, Edge, or Safari with microphone permission.",
     },
+    demo: {
+      title: "Mentor demo guide",
+      exit: "Exit demo",
+      showTour: "Show the mentor demo tour",
+      hideTour: "Hide demo tour",
+      landing:
+        "Welcome to the NextStep demo. Start by clicking 'Start Here' and telling NextStep what's on your mind.",
+      start:
+        "This is where you share what's on your mind. Type your situation or tap 'Speak' to talk. Then press Continue.",
+      goal:
+        "If your goal isn't clear yet, NextStep asks one question. Answer it, and when the direction looks right, press Confirm Goal.",
+      plan: "Your action plan: 3-5 clear steps in order. Start with the first one.",
+      next: "One exact next step to do right now. Done it? Press Mark as Done and NextStep moves you forward.",
+      progress:
+        "Your progress so far. Mark steps done to advance. All steps done = goal complete.",
+      default: "You're in demo mode. Explore the flow: Start, Plan, Next step, Progress.",
+    },
   },
   id: {
     nav: {
@@ -237,6 +254,24 @@ export const translations = {
       languageLabel: "Bahasa",
       notSupported:
         "Input suara tidak tersedia di sini. Gunakan Chrome, Edge, atau Safari dengan izin mikrofon.",
+    },
+    demo: {
+      title: "Panduan demo untuk mentor",
+      exit: "Keluar dari demo",
+      showTour: "Tampilkan tur demo mentor",
+      hideTour: "Sembunyikan tur demo",
+      landing:
+        "Selamat datang di demo NextStep. Mulai dengan menekan 'Mulai di Sini' dan ceritakan apa yang ada di pikiran Anda.",
+      start:
+        "Di sini Anda bercerita. Ketik situasi Anda atau tekan 'Bicara' untuk berbicara. Lalu tekan Lanjutkan.",
+      goal:
+        "Jika tujuan belum jelas, NextStep menanyakan satu pertanyaan. Jawab, dan saat arahnya tepat tekan Konfirmasi Tujuan.",
+      plan: "Rencana aksi Anda: 3-5 langkah yang jelas dan berurutan. Mulailah dengan langkah pertama.",
+      next: "Satu langkah tepat yang harus dilakukan sekarang. Sudah selesai? Tekan Tandai Selesai untuk maju ke depan.",
+      progress:
+        "Ini kemajuan Anda. Tandai langkah selesai untuk maju. Semua selesai = tujuan tercapai.",
+      default:
+        "Anda berada dalam mode demo. Jelajahi jalur: Mulai, Rencana, Langkah selanjutnya, Kemajuan.",
     },
   },
 };

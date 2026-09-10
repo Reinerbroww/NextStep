@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Manrope } from "next/font/google";
 import "./globals.css";
+import { DemoProvider } from "@/components/DemoBanner";
 import { LanguageProvider } from "@/lib/i18n";
 
 const manrope = Manrope({
@@ -25,7 +26,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       className={`${manrope.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-background text-foreground">
-        <LanguageProvider>{children}</LanguageProvider>
+        <DemoProvider>
+          <LanguageProvider>{children}</LanguageProvider>
+        </DemoProvider>
       </body>
     </html>
   );

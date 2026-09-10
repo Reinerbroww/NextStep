@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import Button from "@/components/Button";
+import { DemoBanner, DemoToggle } from "@/components/DemoBanner";
 import LanguageToggle from "@/components/LanguageToggle";
 import { useTranslation } from "@/lib/i18n";
 
@@ -11,6 +12,7 @@ export default function Home() {
 
   return (
     <div className="flex flex-1 flex-col">
+      <DemoBanner />
       <header className="h-16 border-b border-border">
         <nav className="mx-auto flex h-full w-full max-w-[1200px] items-center justify-between px-4 sm:px-6">
           <Link href="/" className="flex h-12 items-center transition-opacity hover:opacity-80">
@@ -52,6 +54,7 @@ export default function Home() {
             <Button href="/start" variant="primary" size="lg">
               {t.nav.startHere}
             </Button>
+            <DemoToggle />
           </div>
         </section>
 

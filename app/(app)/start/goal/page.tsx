@@ -4,8 +4,10 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { loadFlow, saveFlow, useFlow, type PlanStep } from "@/lib/flow";
+import { useDemoMode } from "@/components/DemoBanner";
 import Spinner from "@/components/Spinner";
 import VoiceInput from "@/components/VoiceInput";
+import { useTranslation } from "@/lib/i18n";
 
 function GoalFlow({
   initialGoal,
@@ -15,11 +17,19 @@ function GoalFlow({
   initialQuestion: string;
 }) {
   const router = useRouter();
+  const { demo } = useDemoMode();
+  const { t } = useTranslation();
   const [goal, setGoal] = useState(initialGoal);
   const [question, setQuestion] = useState(initialQuestion);
   const [answer, setAnswer] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (demo && question) {
+      queueMicrotask(() => setAnswer(t.demo.demoAnswer));
+    }
+  }, [demo, question, t]);
 
   async function handleClarify() {
     if (!answer.trim() || loading) return;

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { saveFlow, loadFlow } from "@/lib/flow";
-import { DemoExamples } from "@/components/DemoBanner";
+import { DemoExamples, useDemoMode } from "@/components/DemoBanner";
 import Spinner from "@/components/Spinner";
 import VoiceInput from "@/components/VoiceInput";
 import { useTranslation } from "@/lib/i18n";
@@ -12,6 +12,7 @@ import { useTranslation } from "@/lib/i18n";
 export default function StartPage() {
   const router = useRouter();
   const { language, t } = useTranslation();
+  const { demo } = useDemoMode();
   const [text, setText] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -20,8 +21,12 @@ export default function StartPage() {
     const existing = loadFlow();
     if (existing?.input) {
       queueMicrotask(() => setText(existing.input));
+      return;
     }
-  }, []);
+    if (demo) {
+      queueMicrotask(() => setText(t.demo.demoInput));
+    }
+  }, [demo, t]);
 
   async function handleContinue() {
     const input = text.trim();

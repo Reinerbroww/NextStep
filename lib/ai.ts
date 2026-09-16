@@ -2,16 +2,24 @@ const API_KEY = process.env.GEMINI_API_KEY;
 
 const PRIMARY_MODEL = process.env.GEMINI_MODEL ?? "gemini-3.6-flash";
 
-// Fallback models tried in order if the primary model is unavailable or overloaded (503 / 429).
-const FALLBACK_MODELS = process.env.GEMINI_FALLBACK_MODELS
+// Verified working fallback models (checked against the live API). Always kept
+// so a stale GEMINI_FALLBACK_MODELS env value can never starve the chain.
+const BUILT_IN_FALLBACK_MODELS = [
+  "gemini-3.5-flash",
+  "gemini-3.5-flash-lite",
+  "gemini-3.1-flash-lite",
+  "gemini-flash-lite-latest",
+  "gemini-3-flash-preview",
+];
+
+// Env-provided fallbacks run first (user preference), built-ins appended after.
+const ENV_FALLBACK_MODELS = process.env.GEMINI_FALLBACK_MODELS
   ? process.env.GEMINI_FALLBACK_MODELS.split(",").map((m) => m.trim()).filter(Boolean)
-  : [
-      "gemini-3.5-flash",
-      "gemini-3.5-flash-lite",
-      "gemini-3.1-flash-lite",
-      "gemini-flash-lite-latest",
-      "gemini-3-flash-preview",
-    ];
+  : [];
+
+const FALLBACK_MODELS = Array.from(
+  new Set([...ENV_FALLBACK_MODELS, ...BUILT_IN_FALLBACK_MODELS]),
+);
 
 const MODELS = Array.from(new Set([PRIMARY_MODEL, ...FALLBACK_MODELS]));
 
@@ -20,6 +28,9 @@ const BASE_DELAY_MS = 400;
 const BACKOFF_CAP_MS = 4000;
 const RETRY_AFTER_CAP_MS = 10000;
 const REQUEST_TIMEOUT_MS = 25000;
+// Keep the whole fallback chain inside the routes' 60s Vercel budget so we can
+// always surface a clean error instead of getting killed by the platform.
+const TOTAL_DEADLINE_MS = 45000;
 
 // Status codes that are worth retrying (transient high demand, rate limit, server error).
 const RETRYABLE_STATUS = new Set([429, 500, 502, 503, 504]);
@@ -141,9 +152,15 @@ async function runWithFallback(
   }
 
   let lastError: unknown = null;
+  const startedAt = Date.now();
 
   for (const model of MODELS) {
+    let modelExhausted = false;
     for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+      if (Date.now() - startedAt > TOTAL_DEADLINE_MS) {
+        modelExhausted = true;
+        break;
+      }
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
       try {
@@ -172,6 +189,7 @@ async function runWithFallback(
         clearTimeout(timeout);
       }
     }
+    if (modelExhausted) break;
   }
 
   throw lastError instanceof Error

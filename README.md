@@ -43,7 +43,7 @@ It is not a to-do list. It is not a chatbot. It is a **clarity engine**: from a 
 | 📊 | **Progress tracking** | Live progress with step counters and a clean goal-complete state. |
 | 🌍 | **Follows your language** | Speaks **Bahasa Indonesia, English, Español, Français, Deutsch, 日本語, Português** — the AI detects the language you type in and answers in that language. UI ships with full **English / Bahasa Indonesia** translations. |
 | 💾 | **Session persistence** | Every save is mirrored to PostgreSQL, so closing the browser never loses your flow. `/next` and `/progress` auto-restore your last session. |
-| 🛡️ | **Resilient AI** | Automatic retries, timeouts, and model fallback (`gemini-3.6-flash` → `gemini-flash-latest` → `gemini-2.5-flash` → `gemini-3.5-flash`) so an overloaded model never stalls you. |
+| 🛡️ | **Resilient AI** | Automatic retries, exponential backoff, timeouts, and model fallback (`gemini-3.6-flash` → `gemini-3.5-flash` → `gemini-3.5-flash-lite` → …) so an overloaded model never stalls you. |
 
 ---
 
@@ -91,7 +91,7 @@ Copy `.env.example` to `.env.local` and fill in your keys:
 DATABASE_URL="your-neon-postgresql-connection-string"
 GEMINI_API_KEY="your-gemini-api-key"
 GEMINI_MODEL="gemini-3.6-flash"
-GEMINI_FALLBACK_MODELS="gemini-flash-latest,gemini-2.5-flash,gemini-3.5-flash"
+GEMINI_FALLBACK_MODELS="gemini-3.5-flash,gemini-3.5-flash-lite,gemini-3.1-flash-lite,gemini-flash-lite-latest,gemini-3-flash-preview"
 ```
 
 | Variable | Required | Description |

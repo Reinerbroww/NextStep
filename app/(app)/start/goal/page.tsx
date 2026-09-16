@@ -40,18 +40,23 @@ function GoalFlow({
       router.replace("/start");
       return;
     }
+    const clarifyCount = flow.clarifyCount ?? 0;
     try {
       const res = await fetch("/api/analyze", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ input: `${flow.input}\n${answer}` }),
+        body: JSON.stringify({ input: `${flow.input}\n${answer}`, clarifyCount }),
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
         throw new Error(data.error || "Something went wrong.");
       }
       const data = await res.json();
-      saveFlow({ ...flow, ...data });
+      saveFlow({
+        ...flow,
+        ...data,
+        clarifyCount: data.isGoalClear ? clarifyCount : clarifyCount + 1,
+      });
       setGoal(data.goal);
       setQuestion(data.isGoalClear ? "" : data.clarifyingQuestion);
       setAnswer("");
@@ -100,6 +105,42 @@ function GoalFlow({
       router.push("/plan");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong.");
+      setLoading(false);
+    }
+  }
+
+  async function handleNotWhatIWant() {
+    if (loading) return;
+    setLoading(true);
+    setError("");
+    const flow = loadFlow();
+    if (!flow) {
+      router.replace("/start");
+      return;
+    }
+    const clarifyCount = flow.clarifyCount ?? 0;
+    try {
+      const res = await fetch("/api/analyze", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ input: flow.input, clarifyCount, refine: true }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || "Something went wrong.");
+      }
+      const data = await res.json();
+      saveFlow({
+        ...flow,
+        ...data,
+        clarifyCount: data.isGoalClear ? clarifyCount : clarifyCount + 1,
+      });
+      setGoal(data.goal);
+      setQuestion(data.isGoalClear ? "" : data.clarifyingQuestion);
+      setAnswer("");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Something went wrong.");
+    } finally {
       setLoading(false);
     }
   }
@@ -205,6 +246,18 @@ function GoalFlow({
             ) : (
               "Confirm Goal"
             )}
+          </button>
+        </div>
+      ) : null}
+
+      {!question ? (
+        <div className="mt-6">
+          <button
+            onClick={handleNotWhatIWant}
+            disabled={loading}
+            className="text-sm text-secondary underline underline-offset-4 transition-colors hover:text-primary"
+          >
+            {t.goal.notMyDirection}
           </button>
         </div>
       ) : null}

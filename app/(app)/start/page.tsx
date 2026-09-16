@@ -53,6 +53,7 @@ export default function StartPage() {
         plan: null,
         nextStep: null,
         nextStepMinutes: null,
+        clarifyCount: data.isGoalClear ? 0 : 1,
       });
       router.push("/start/understanding");
     } catch (err) {

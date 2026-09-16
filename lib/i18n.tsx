@@ -66,6 +66,7 @@ export const translations = {
       editGoalButton: "Edit Goal",
       confirmGoalButton: "Confirm Goal",
       buildingPlanLoading: "Building your plan...",
+      notMyDirection: "That's not what I want",
     },
     plan: {
       title: "Your Plan",
@@ -209,6 +210,7 @@ export const translations = {
       editGoalButton: "Edit Tujuan",
       confirmGoalButton: "Konfirmasi Tujuan",
       buildingPlanLoading: "Menyusun rencana Anda...",
+      notMyDirection: "Bukan itu yang saya inginkan",
     },
     plan: {
       title: "Rencana Anda",

@@ -15,8 +15,10 @@ const FALLBACK_MODELS = process.env.GEMINI_FALLBACK_MODELS
 
 const MODELS = Array.from(new Set([PRIMARY_MODEL, ...FALLBACK_MODELS]));
 
-const MAX_ATTEMPTS = 2;
-const BASE_DELAY_MS = 350;
+const MAX_ATTEMPTS = 3;
+const BASE_DELAY_MS = 400;
+const BACKOFF_CAP_MS = 4000;
+const RETRY_AFTER_CAP_MS = 10000;
 const REQUEST_TIMEOUT_MS = 25000;
 
 // Status codes that are worth retrying (transient high demand, rate limit, server error).
@@ -95,8 +97,16 @@ async function requestToModel(
   if (!res.ok) {
     const body = await res.text();
     const err = new Error(`Gemini API error ${res.status}: ${body.slice(0, 300)}`);
-    (err as Error & { status?: number }).status = res.status;
-    throw err;
+    const retryAfterHeader = res.headers.get("retry-after");
+    const seconds = retryAfterHeader ? Number(retryAfterHeader) : NaN;
+    const retryAfterMs =
+      retryAfterHeader && Number.isFinite(seconds) && seconds > 0
+        ? Math.min(seconds, RETRY_AFTER_CAP_MS / 1000) * 1000
+        : undefined;
+    const enriched = err as Error & { status?: number; retryAfterMs?: number };
+    enriched.status = res.status;
+    enriched.retryAfterMs = retryAfterMs;
+    throw enriched;
   }
 
   const data = (await res.json()) as {
@@ -105,6 +115,17 @@ async function requestToModel(
 
   const text = data.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
   return { text, model };
+}
+
+// Compute exponential backoff with jitter for a retry attempt (0-based).
+function backoffFor(attempt: number, retryAfterMs?: number): number {
+  const exponential = BASE_DELAY_MS * 2 ** attempt;
+  const jitter = Math.random() * 200;
+  let delayMs = Math.min(exponential + jitter, BACKOFF_CAP_MS);
+  if (retryAfterMs && retryAfterMs > delayMs) {
+    delayMs = Math.min(retryAfterMs, RETRY_AFTER_CAP_MS);
+  }
+  return Math.max(250, delayMs);
 }
 
 // Tries the model list with automatic retry & fallback model switching on overload (503/429)
@@ -136,15 +157,16 @@ async function runWithFallback(
       } catch (err) {
         lastError = err;
         const status = (err as Error & { status?: number }).status;
+        const retryAfterMs = (err as Error & { retryAfterMs?: number }).retryAfterMs;
 
         // Non-retryable (401/403/404): try next model immediately.
         if (status !== undefined && !RETRYABLE_STATUS.has(status)) {
           break;
         }
 
-        // Retryable (503/429/500/502/504): short backoff and retry.
+        // Retryable (503/429/500/502/504): exponential backoff with jitter.
         if (attempt < MAX_ATTEMPTS - 1) {
-          await delay(BASE_DELAY_MS * (attempt + 1) + Math.random() * 200);
+          await delay(backoffFor(attempt, retryAfterMs));
         }
       } finally {
         clearTimeout(timeout);

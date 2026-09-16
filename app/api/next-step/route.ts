@@ -72,9 +72,14 @@ export async function POST(req: Request) {
       PROMPT(goal, stepsText, currentStep, languageInstruction),
     );
     const result = parseJson<NextStepResult>(text);
+    let nextStep = result.nextStep ?? "";
+    let minutes = result.minutes ?? "15";
+    if (!nextStep) {
+      nextStep = currentStep || goal;
+    }
     return NextResponse.json({
-      nextStep: result.nextStep ?? "",
-      minutes: result.minutes ?? "",
+      nextStep,
+      minutes,
     });
   } catch (err) {
     return NextResponse.json(

@@ -114,6 +114,19 @@ export async function POST(req: Request) {
         : "Define and execute your clear next objective";
     }
 
+    // Ensure clarifying question exists if goal is not clear
+    if (!isGoalClear && !clarifyingQuestion) {
+      if (goal) {
+        isGoalClear = true;
+        rawScore = 100;
+      } else {
+        clarifyingQuestion =
+          detected === "Indonesian" || languageName === "Bahasa Indonesia"
+            ? "Bisakah Anda menceritakan lebih detail tentang apa yang ingin Anda capai?"
+            : "Could you share a bit more detail about what you would like to achieve?";
+      }
+    }
+
     return NextResponse.json({
       context: result.context ?? "",
       isGoalClear,

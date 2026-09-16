@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { generateFromPrompt, parseJson } from "@/lib/ai";
+import { generateFromPrompt, parseJson, sanitizeAiErrorMessage } from "@/lib/ai";
 import { detectLanguage, languageCodeToName } from "@/lib/language";
 
 // Gemini calls can take 10-20s; keep the function below Vercel's Hobby cap.
@@ -136,8 +136,8 @@ export async function POST(req: Request) {
     });
   } catch (err) {
     return NextResponse.json(
-      { error: err instanceof Error ? err.message : "AI request failed." },
-      { status: 500 },
+      { error: sanitizeAiErrorMessage(err, language) },
+      { status: 503 },
     );
   }
 }

@@ -1,21 +1,27 @@
 const API_KEY = process.env.GEMINI_API_KEY;
 
-const PRIMARY_MODEL = process.env.GEMINI_MODEL ?? "gemini-3.6-flash";
+const PRIMARY_MODEL = process.env.GEMINI_MODEL ?? "gemini-2.5-flash";
 
-// Fallback models tried in order if the primary is unavailable
-// (e.g. transient 503 "high demand" errors).
+// Fallback models tried in order if the primary model is unavailable or overloaded (503 / 429).
 const FALLBACK_MODELS = process.env.GEMINI_FALLBACK_MODELS
   ? process.env.GEMINI_FALLBACK_MODELS.split(",").map((m) => m.trim()).filter(Boolean)
-  : ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash", "gemini-flash-latest"];
+  : [
+      "gemini-2.5-flash",
+      "gemini-2.0-flash",
+      "gemini-1.5-flash",
+      "gemini-2.0-flash-lite",
+      "gemini-1.5-pro",
+      "gemini-flash-latest",
+    ];
 
 const MODELS = Array.from(new Set([PRIMARY_MODEL, ...FALLBACK_MODELS]));
 
 const MAX_ATTEMPTS = 2;
-const BASE_DELAY_MS = 400;
+const BASE_DELAY_MS = 350;
 const REQUEST_TIMEOUT_MS = 25000;
 
-// Status codes that are worth retrying on the same model (transient).
-const RETRYABLE_STATUS = new Set([429, 500, 502, 504]);
+// Status codes that are worth retrying (transient high demand, rate limit, server error).
+const RETRYABLE_STATUS = new Set([429, 500, 502, 503, 504]);
 
 type Part =
   | { text: string }
@@ -28,6 +34,39 @@ type ApiTextResult = {
 
 function delay(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+export function sanitizeAiErrorMessage(err: unknown, language: string = "en"): string {
+  const message = err instanceof Error ? err.message : String(err);
+  const isIndonesian = language === "id" || language.toLowerCase().includes("indonesia");
+
+  if (!API_KEY) {
+    return isIndonesian
+      ? "Konfigurasi GEMINI_API_KEY belum dipasang. Tambahkan ke .env.local untuk menggunakan AI."
+      : "GEMINI_API_KEY is not configured. Add it to .env.local to use the AI.";
+  }
+
+  if (
+    message.includes("503") ||
+    message.includes("429") ||
+    message.includes("UNAVAILABLE") ||
+    message.includes("high demand") ||
+    message.includes("overloaded")
+  ) {
+    return isIndonesian
+      ? "Layanan AI sedang mengalami lonjakan pemakaian tinggi saat ini. Silakan coba lagi beberapa saat lagi."
+      : "The AI service is currently experiencing high demand. Please try again in a moment.";
+  }
+
+  if (message.includes("401") || message.includes("403") || message.includes("API key")) {
+    return isIndonesian
+      ? "Kunci API AI tidak valid atau tidak memiliki izin."
+      : "The AI API key is invalid or unauthorized.";
+  }
+
+  return isIndonesian
+    ? "Tidak dapat terhubung ke AI saat ini. Silakan periksa koneksi Anda dan coba lagi."
+    : "Unable to reach the AI service right now. Please check your connection and try again.";
 }
 
 async function requestToModel(
@@ -69,8 +108,7 @@ async function requestToModel(
   return { text, model };
 }
 
-// Tries the model list with quick model switching on overload, so a single
-// slow/overloaded model does not stall the request.
+// Tries the model list with automatic retry & fallback model switching on overload (503/429)
 async function runWithFallback(
   parts: Part[],
   temperature: number,
@@ -100,21 +138,14 @@ async function runWithFallback(
         lastError = err;
         const status = (err as Error & { status?: number }).status;
 
-        // 503 means the model is overloaded right now. Retrying it just wastes
-        // time, so move to the next model quickly.
-        if (status === 503) {
-          await delay(150);
-          break;
-        }
-
-        // Non-retryable (wrong model name, auth, bad request): try next model.
+        // Non-retryable (401/403/404): try next model immediately.
         if (status !== undefined && !RETRYABLE_STATUS.has(status)) {
           break;
         }
 
-        // Retryable (429/500/502/504 or network/timeout): short backoff.
+        // Retryable (503/429/500/502/504): short backoff and retry.
         if (attempt < MAX_ATTEMPTS - 1) {
-          await delay(BASE_DELAY_MS * (attempt + 1));
+          await delay(BASE_DELAY_MS * (attempt + 1) + Math.random() * 200);
         }
       } finally {
         clearTimeout(timeout);

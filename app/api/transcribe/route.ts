@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { transcribeAudio, parseJson } from "@/lib/ai";
+import { transcribeAudio, parseJson, sanitizeAiErrorMessage } from "@/lib/ai";
 
 // Transcription (audio to Gemini) can take a while; keep it below Vercel's cap.
 export const maxDuration = 60;
@@ -37,8 +37,8 @@ export async function POST(req: Request) {
     return NextResponse.json({ text: result.text ?? "" });
   } catch (err) {
     return NextResponse.json(
-      { error: err instanceof Error ? err.message : "AI transcribe failed." },
-      { status: 500 },
+      { error: sanitizeAiErrorMessage(err) },
+      { status: 503 },
     );
   }
 }

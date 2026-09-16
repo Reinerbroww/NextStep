@@ -1,17 +1,16 @@
 const API_KEY = process.env.GEMINI_API_KEY;
 
-const PRIMARY_MODEL = process.env.GEMINI_MODEL ?? "gemini-2.5-flash";
+const PRIMARY_MODEL = process.env.GEMINI_MODEL ?? "gemini-3.6-flash";
 
 // Fallback models tried in order if the primary model is unavailable or overloaded (503 / 429).
 const FALLBACK_MODELS = process.env.GEMINI_FALLBACK_MODELS
   ? process.env.GEMINI_FALLBACK_MODELS.split(",").map((m) => m.trim()).filter(Boolean)
   : [
-      "gemini-2.5-flash",
-      "gemini-2.0-flash",
-      "gemini-1.5-flash",
-      "gemini-2.0-flash-lite",
-      "gemini-1.5-pro",
-      "gemini-flash-latest",
+      "gemini-3.5-flash",
+      "gemini-3.5-flash-lite",
+      "gemini-3.1-flash-lite",
+      "gemini-flash-lite-latest",
+      "gemini-3-flash-preview",
     ];
 
 const MODELS = Array.from(new Set([PRIMARY_MODEL, ...FALLBACK_MODELS]));

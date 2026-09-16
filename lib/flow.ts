@@ -18,8 +18,9 @@ export type FlowState = {
   plan: PlanStep[] | null;
   nextStep: string | null;
   nextStepMinutes: string | null;
-  clarifyCount?: number;
   confidenceScore?: number;
+  clarifyCount?: number;
+  lastClarifyingQuestion?: string;
 };
 
 const KEY = "nextstep-flow";

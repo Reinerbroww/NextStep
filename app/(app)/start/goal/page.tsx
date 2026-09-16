@@ -83,7 +83,7 @@ function GoalFlow({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           input: `${currentFlow.input}\nAnswer: ${answer}`,
-          clarifyCount: nextClarifyCount,
+          clarifyCount: currentClarifyCount,
         }),
       });
       if (!res.ok) {
@@ -98,7 +98,10 @@ function GoalFlow({
         goal: data.goal,
         isGoalClear: data.isGoalClear,
         clarifyingQuestion: data.clarifyingQuestion,
-        clarifyCount: nextClarifyCount,
+        clarifyCount: data.isGoalClear ? currentClarifyCount : nextClarifyCount,
+        lastClarifyingQuestion: data.isGoalClear
+          ? currentFlow.clarifyingQuestion || currentFlow.lastClarifyingQuestion || ""
+          : data.clarifyingQuestion,
         confidenceScore: data.confidenceScore ?? (data.isGoalClear ? 100 : 75),
       });
       setGoal(data.goal);
@@ -155,14 +158,33 @@ function GoalFlow({
 
   async function handleNotWhatIWant() {
     if (loading) return;
-    setLoading(true);
     setError("");
     const currentFlow = loadFlow();
     if (!currentFlow) {
       router.replace("/start");
       return;
     }
-    const currentClarifyCount = currentFlow.clarifyCount ?? 1;
+    const lastQuestion =
+      currentFlow.lastClarifyingQuestion || currentFlow.clarifyingQuestion || "";
+
+    // Re-ask the last clarifying question so the user can continue from there.
+    if (lastQuestion) {
+      saveFlow({
+        ...currentFlow,
+        isGoalClear: false,
+        clarifyingQuestion: lastQuestion,
+        lastClarifyingQuestion: lastQuestion,
+        confidenceScore: 60,
+      });
+      setGoal("");
+      setQuestion(lastQuestion);
+      setAnswer("");
+      return;
+    }
+
+    // No question was ever asked: ask the AI for the first one.
+    setLoading(true);
+    const currentClarifyCount = currentFlow.clarifyCount ?? 0;
     try {
       const res = await fetch("/api/analyze", {
         method: "POST",
@@ -185,6 +207,7 @@ function GoalFlow({
         isGoalClear: data.isGoalClear,
         clarifyingQuestion: data.clarifyingQuestion,
         clarifyCount: data.isGoalClear ? currentClarifyCount : currentClarifyCount + 1,
+        lastClarifyingQuestion: data.isGoalClear ? "" : data.clarifyingQuestion,
         confidenceScore: data.confidenceScore ?? (data.isGoalClear ? 100 : 60),
       });
       setGoal(data.goal);
@@ -227,25 +250,6 @@ function GoalFlow({
           <div className="mt-6 flex flex-col items-stretch gap-4 sm:flex-row sm:items-center sm:justify-between">
             <VoiceInput value={answer} onChange={setAnswer} />
             <div className="flex flex-wrap items-center gap-3">
-              <button
-                onClick={handleNotWhatIWant}
-                disabled={loading}
-                className="inline-flex h-11 items-center justify-center gap-2 rounded-md border border-border bg-surface-light px-4 text-xs font-semibold tracking-wide text-secondary shadow-xs transition-all hover:border-border-strong hover:bg-surface hover:text-foreground active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                {loading ? (
-                  <span className="inline-flex items-center gap-2">
-                    <Spinner />
-                    {t.goal.refiningDirection}
-                  </span>
-                ) : (
-                  <>
-                    <svg className="h-4 w-4 opacity-75" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                    </svg>
-                    {t.goal.notMyDirection}
-                  </>
-                )}
-              </button>
               <button
                 onClick={handleClarify}
                 disabled={!answer.trim() || loading}
@@ -300,12 +304,18 @@ function GoalFlow({
 
       {!question ? (
         <div className="mt-12 flex flex-wrap items-center gap-4">
-          <Link
-            href="/start"
+          <button
+            onClick={() => {
+              const el = document.getElementById("goal");
+              if (el) {
+                el.focus();
+                el.scrollIntoView({ block: "center", behavior: "smooth" });
+              }
+            }}
             className="inline-flex h-11 items-center justify-center rounded-md border border-border px-5 text-xs font-semibold tracking-wide text-foreground transition-colors hover:border-primary hover:text-primary"
           >
             {t.goal.editGoalButton}
-          </Link>
+          </button>
           <button
             onClick={handleConfirm}
             disabled={!goal.trim() || loading}

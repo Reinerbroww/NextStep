@@ -54,6 +54,7 @@ export default function StartPage() {
         nextStep: null,
         nextStepMinutes: null,
         clarifyCount: data.isGoalClear ? 0 : 1,
+        confidenceScore: data.confidenceScore ?? (data.isGoalClear ? 100 : 35),
       });
       router.push("/start/understanding");
     } catch (err) {

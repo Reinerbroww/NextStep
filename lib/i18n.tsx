@@ -67,6 +67,11 @@ export const translations = {
       confirmGoalButton: "Confirm Goal",
       buildingPlanLoading: "Building your plan...",
       notMyDirection: "That's not what I want",
+      refiningDirection: "Finding a new direction...",
+      confidenceTitle: "AI Clarity",
+      confidenceHintLow: "Gathering initial context...",
+      confidenceHintMed: "Refining understanding with your details...",
+      confidenceHintHigh: "High clarity achieved — direction established!",
     },
     plan: {
       title: "Your Plan",
@@ -211,6 +216,11 @@ export const translations = {
       confirmGoalButton: "Konfirmasi Tujuan",
       buildingPlanLoading: "Menyusun rencana Anda...",
       notMyDirection: "Bukan itu yang saya inginkan",
+      refiningDirection: "Mencari arah baru...",
+      confidenceTitle: "Kejelasan AI",
+      confidenceHintLow: "Mengumpulkan konteks awal...",
+      confidenceHintMed: "Memperjelas pemahaman berdasarkan jawaban Anda...",
+      confidenceHintHigh: "Kejelasan tinggi dicapai — arah telah ditetapkan!",
     },
     plan: {
       title: "Rencana Anda",

@@ -19,6 +19,7 @@ export type FlowState = {
   nextStep: string | null;
   nextStepMinutes: string | null;
   clarifyCount?: number;
+  confidenceScore?: number;
 };
 
 const KEY = "nextstep-flow";

@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { loadFlow, saveFlow, useFlow, type PlanStep } from "@/lib/flow";
-import { useDemoMode } from "@/components/DemoBanner";
 import Spinner from "@/components/Spinner";
 import VoiceInput from "@/components/VoiceInput";
 import { useTranslation } from "@/lib/i18n";
@@ -49,7 +48,6 @@ function GoalFlow({
 }) {
   const router = useRouter();
   const flow = useFlow();
-  const { demo } = useDemoMode();
   const { t } = useTranslation();
   const [goal, setGoal] = useState(initialGoal);
   const [question, setQuestion] = useState(initialQuestion);
@@ -58,12 +56,6 @@ function GoalFlow({
   const [error, setError] = useState("");
 
   const confidenceScore = flow?.confidenceScore ?? (question ? 35 : 100);
-
-  useEffect(() => {
-    if (demo && question) {
-      queueMicrotask(() => setAnswer(t.demo.demoAnswer));
-    }
-  }, [demo, question, t]);
 
   async function handleClarify() {
     if (!answer.trim() || loading) return;

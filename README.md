@@ -1,91 +1,94 @@
 <div align="center">
 
-# <span style="color:#2f6db5">Next</span><span style="color:#17a2a8">Step</span>
+# NextStep
 
-### <span style="color:#171716">Know what you want.</span> <span style="color:#676762">Know what to do.</span>
+### College of Applied Artificial Intelligence — Official Repository
 
-**NextStep** is an AI-powered web app that walks you from *confusion* to *clarity* — one calm, concrete step at a time.
-
-<br />
-
-![Next.js](https://img.shields.io/badge/Next.js-16-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)
-![React](https://img.shields.io/badge/React-19-61dafb?style=for-the-badge&logo=react&logoColor=black)
-![TypeScript](https://img.shields.io/badge/TypeScript-5-3178c6?style=for-the-badge&logo=typescript&logoColor=white)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-4-06b6d4?style=for-the-badge&logo=tailwindcss&logoColor=white)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Neon-316192?style=for-the-badge&logo=postgresql&logoColor=white)
-![Gemini](https://img.shields.io/badge/Gemini-API-4285f4?style=for-the-badge&logo=google&logoColor=white)
+**Motto: *Know what you want. Know what to do.***
 
 </div>
 
 ---
 
-## 🌱 What is NextStep?
+## Institutional Statement
 
-People get stuck not because they lack answers, but because they have **too many thoughts, options, and questions**. NextStep exists to cut through the noise:
+NextStep is an applied research program of the College of Applied Artificial Intelligence. It is dedicated to a single proposition: *clarity precedes action*. Advised by a large language model, the program guides an individual from unresolved confusion to a defined objective, and from that objective to one concrete, immediately actionable step.
 
-> Tell us what's on your mind. We help you find the goal, build the plan, and tell you the **one** thing to do right now.
-
-It is not a to-do list. It is not a chatbot. It is a **clarity engine**: from a messy head to a clear next step.
-
-**Core philosophy** — `Confused → Understand → Clarify → Goal → Plan → Next Step → Progress`
+This repository contains the complete academic record of the program — its curriculum, its technical infrastructure, its admissions procedure, and its standing design conventions.
 
 ---
 
-## ✨ Features
+## Mission Statement
 
-| | Feature | What it does |
-| :-: | --- | --- |
-| 🎤 | **Text & Voice input** | Type your situation or *just talk*. Voice uses your browser's speech recognition first, and automatically falls back to **AI transcription (Gemini)** when the browser speech service is unreachable. |
-| 🧠 | **Context & intent understanding** | The AI reads what's really going on, not just what you typed. |
-| 💡 | **Goal discovery & clarification** | Goal already clear? It proposes one. Fuzzy? It asks a single focused question. |
-| 🗺️ | **Action plan** | A tailored 3–5 step plan beginners can actually follow. |
-| ➡️ | **Next step** | The exact thing to do *right now*, with an estimated time in minutes. Mark it done and the next step adapts. |
-| 📊 | **Progress tracking** | Live progress with step counters and a clean goal-complete state. |
-| 🌍 | **Follows your language** | Speaks **Bahasa Indonesia, English, Español, Français, Deutsch, 日本語, Português** — the AI detects the language you type in and answers in that language. UI ships with full **English / Bahasa Indonesia** translations. |
-| 💾 | **Session persistence** | Every save is mirrored to PostgreSQL, so closing the browser never loses your flow. `/next` and `/progress` auto-restore your last session. |
-| 🛡️ | **Resilient AI** | Automatic retries, exponential backoff, timeouts, and model fallback (`gemini-3.6-flash` → `gemini-3.5-flash` → `gemini-3.5-flash-lite` → …) so an overloaded model never stalls you. |
+The program exists to serve individuals who are not lacking in answers, but who are burdened by an excess of options. NextStep does not present itself as a productivity instrument or a conversational agent. It operates as a **clarity engine**: it receives an unsettled mind as input and produces, as output, a single well-defined next step.
+
+> Left to its own devices, the mind assembles questions faster than it answers them. The function of this program is to interrupt that process at an acceptable rate of one step per session.
 
 ---
 
-## 🧭 How it works
+## Abstract
+
+- **Problem.** Uncertainty about what to pursue leads to inaction.
+- **Objective.** Transform an unstructured expression of intent into (1) a confirmed goal, (2) a short course of action, and (3) a specific next step with an estimated duration.
+- **Method.** A staged dialogue model — Intake, Understanding, Clarification, Goal Confirmation, Planning, Execution, and Progress — overseen by an AI advisor.
+- **Result.** The program is delivered as a web application supporting written and spoken input, multilingual advising, durable session records, and resilient AI service integration.
+
+---
+
+## Program Methodology
+
+The advising model follows a fixed academic sequence. Each stage qualifies as a prerequisite for the next.
 
 ```
-        🫥 Confused
-            │
-            ▼
-        📝 "What's on your mind?"   ← type or speak
-            │
-            ▼
-        🧠 AI understands context & intent
-            │
-            ▼
-      Goal clear?  ──No──▶  ❓ AI asks ONE question → you answer → back up
-            │
-           Yes
-            │
-            ▼
-   ✅ Confirm goal  →  🗺️ Action plan (3–5 steps)
-            │
-            ▼
-   ➡️ Next step  →  "Mark as Done"  →  next step adapts
-            │
-            ▼
-        📊 Progress  →  ⭐ Goal complete → new session
+Stage I      Intake                The student shares, in writing or by voice, what is on their mind.
+Stage II     Understanding         The AI advisor summarizes context and intent.
+Stage III    Clarification         Where the objective is unclear, the advisor asks a single focused
+                                   question — at most five per session, after which a direction is
+                                   determined — or, should the direction be disputed, returns to the
+                                   last question posed.
+Stage IV     Goal Confirmation     A proposed goal is presented for the student's approval and edit.
+Stage V      Planning              A course of 3–5 steps is drafted, ordered for a beginner.
+Stage VI     Execution             One next step is advanced, with an estimated completion time.
+Stage VII    Progress              Completing a step advances the course; the program adapts.
 ```
 
 ---
 
-## ⚡ Quickstart
+## Curriculum
 
-### 1. Install
+The following offerings comprise the program's core instruction. Each is delivered in the same calm, focused register.
+
+| Offering | Description |
+| --- | --- |
+| Text and Voice Intake | Students may type or speak. Speech recognition is attempted through the browser's native service, with automatic recourse to AI transcription (Gemini) should the native service be unavailable. |
+| Context and Intent Understanding | The advisor interprets underlying intent rather than surface wording. |
+| Goal Discovery and Clarification | A clear objective yields a proposed goal; an unclear objective yields one focused question. |
+| Action Planning | A tailored course of 3–5 steps, appropriate for a practitioner of any level. |
+| Next-Step Guidance | The precise action to be taken immediately, together with an estimated duration in minutes. Completed steps advance the course. |
+| Progress Records | Step completion is tracked, with explicit goal-complete states and session counters. |
+| Multilingual Instruction | Advising is conducted in the language of the student. Dialects supported include English, Bahasa Indonesia, Español, Français, Deutsch, 日本語, and Português; the interface is fully translated into English and Bahasa Indonesia. |
+| Session Persistence | Every record is mirrored to a PostgreSQL database, such that a closed browser does not forfeit the student's standing. `/next` and `/progress` restore the last session automatically. |
+| Service Resilience | Requests are attempted against a primary AI model with automatic retries, exponential backoff, and a cascading fallback through verified secondary models (`gemini-3.6-flash` → `gemini-3.5-flash` → `gemini-3.5-flash-lite` …) so that service interruption never suspends the student. |
+
+---
+
+## Admissions
+
+### Prerequisites
+
+- Node.js and npm installed on the applicant's machine.
+- A Google AI Studio API key.
+- (Optional) A PostgreSQL connection string; the Neon serverless offering is recommended.
+
+### Step 1 — Installation
 
 ```bash
 npm install
 ```
 
-### 2. Configure environment
+### Step 2 — Configuration
 
-Copy `.env.example` to `.env.local` and fill in your keys:
+Copy the standing template `.env.example` to `.env.local` and furnish the following variables:
 
 ```env
 DATABASE_URL="your-neon-postgresql-connection-string"
@@ -94,117 +97,117 @@ GEMINI_MODEL="gemini-3.6-flash"
 GEMINI_FALLBACK_MODELS="gemini-3.5-flash,gemini-3.5-flash-lite,gemini-3.1-flash-lite,gemini-flash-lite-latest,gemini-3-flash-preview"
 ```
 
-| Variable | Required | Description |
+| Variable | Required | Purpose |
 | --- | :-: | --- |
-| `GEMINI_API_KEY` | ✅ | Google AI Studio key used for every AI call and voice transcription |
-| `DATABASE_URL` | ✅ | Neon (or any) PostgreSQL connection string |
-| `GEMINI_MODEL` | ⬜ | Primary model (default `gemini-3.6-flash`) |
-| `GEMINI_FALLBACK_MODELS` | ⬜ | Comma-separated fallbacks tried in order on overload |
+| `GEMINI_API_KEY` | Yes | Google AI Studio key employed for every AI request and voice transcription. |
+| `DATABASE_URL` | Yes | PostgreSQL connection string (Neon or equivalent). |
+| `GEMINI_MODEL` | No | Primary model; defaults to `gemini-3.6-flash`. |
+| `GEMINI_FALLBACK_MODELS` | No | Comma-separated reserve models, tried in sequence upon overload. |
 
-### 3. Run
+### Step 3 — Commencement
 
 ```bash
-npm run dev          # start dev server → http://localhost:3000
-npm run lint         # lint (eslint)
-npm run build        # production build
-npm run start        # serve production build
+npm run dev          # Begin the development server → http://localhost:3000
+npm run lint         # Enforce the house style (ESLint)
+npm run build        # Compile a production build
+npm run start        # Serve the production build
 ```
 
-> 💡 Voice input needs a **secure context** — `localhost` works during development; a deployed site must be served over HTTPS.
+Voice intake requires a secure context (HTTPS). `localhost` satisfies this during development; a published installation must be served over a signed connection.
 
 ---
 
-## 🗄️ Database (PostgreSQL / Neon)
+## Office of Records (Data Infrastructure)
 
-The schema lives in [`lib/schema.sql`](lib/schema.sql) and mirrors the source-of-truth in `docs/coldstart.md`.
+The relational schema is maintained in [`lib/schema.sql`](lib/schema.sql) and documented thoroughly in `docs/coldstart.md`.
 
 ```
-User → Session → Goal → Action Plan → Progress
+Student → Session → Goal → Action Plan → Progress
 ```
 
-- **users** — who you are
-- **sessions** — one "what's on your mind" share (`text` / `voice`)
-- **goals** — `active` / `completed` / `archived`
-- **action_plans** — ordered steps, `pending` → `in_progress` → `completed`
-- **progress** — step completion tracking with timestamps
+- **users** — the identity of the applicant.
+- **sessions** — a single statement of "what is on your mind," by text or by voice.
+- **goals** — a course objective with states `active`, `completed`, and `archived`.
+- **action_plans** — ordered steps progressing `pending` → `in_progress` → `completed`.
+- **progress** — the record of step completion, with timestamps.
 
-The app auto-creates a compact `nextstep_sessions` table on first use for lightweight session restore, while `lib/schema.sql` documents the full relational model ready for growth.
+On first use, the application provisions a compact `nextstep_sessions` table for the lightweight restoration of sessions; `lib/schema.sql` preserves the full relational model for subsequent growth.
 
 ---
 
-## 🛠️ Tech Stack
+## Facilities and Technology
 
-| Layer | Choice |
+| Division | Standing |
 | --- | --- |
-| Framework | **Next.js 16** (App Router) |
-| UI Library | **React 19** |
-| Language | **TypeScript** |
-| Styling | **Tailwind CSS 4** |
-| Database | **PostgreSQL** via **Neon** (`@neondatabase/serverless`) |
-| AI | **Google Gemini** (`generativelanguage.googleapis.com`) |
-| Voice | Web Speech API + WAV recording → Gemini transcription fallback |
+| Framework | Next.js 16 (App Router) |
+| Interface Library | React 19 |
+| Language | TypeScript |
+| Styling | Tailwind CSS 4 |
+| Database | PostgreSQL via Neon (`@neondatabase/serverless`) |
+| AI Advisory | Google Gemini (`generativelanguage.googleapis.com`) |
+| Voice | Web Speech API, with WAV recording and Gemini transcription as reserve |
 
 ---
 
-## 📁 Project Structure
+## Institutional Organization
 
 ```text
 NextStep/
 ├── app/
-│   ├── (app)/                # Main user flow pages
-│   │   ├── start/            #   Input + goal clarification
-│   │   ├── plan/             #   Action plan
-│   │   ├── next/             #   "What should I do next?"
-│   │   └── progress/         #   Progress tracking
+│   ├── (app)/                # The principal user journey
+│   │   ├── start/            #   Intake and clarification
+│   │   ├── plan/             #   Course planning
+│   │   ├── next/             #   Next-step advisement
+│   │   └── progress/         #   Progress records
 │   ├── api/
-│   │   ├── analyze/          #   AI context/intent + goal + clarifying question
-│   │   ├── plan/             #   AI action plan
-│   │   ├── next-step/        #   AI next step + minutes
+│   │   ├── analyze/          #   Context, goal, and clarifying question
+│   │   ├── plan/             #   Course of action
+│   │   ├── next-step/        #   Next step and its duration
 │   │   ├── transcribe/       #   Voice audio → text (Gemini)
-│   │   └── session/          #   Persist / restore sessions
-│   ├── page.tsx              # Landing page
+│   │   └── session/          #   Persist and restore sessions
+│   ├── page.tsx              # The public landing page
 │   └── ...
-├── components/               # Reusable UI (Spinner, VoiceInput, LanguageToggle...)
-├── lib/                      # ai client, flow store, wav encoder, i18n, db, language detection
-├── docs/                     # Product docs — the source of truth
+├── components/               # Reusable interface elements
+├── lib/                      # AI client, flow store, WAV encoder, i18n, database, language detection
+├── docs/                     # Official program records
 └── public/
 ```
 
-**API routes recap**
+### Public Course Endpoints
 
-| Route | Method | Purpose |
+| Endpoint | Method | Purpose |
 | --- | :-: | --- |
-| `/api/analyze` | POST | Understand input → goal or clarifying question |
-| `/api/plan` | POST | Build a 3–5 step action plan |
-| `/api/next-step` | POST | Generate the next concrete step + minutes |
-| `/api/transcribe` | POST | `{ audio, mimeType }` → transcribed text |
-| `/api/session` | POST/GET | Upsert latest flow / fetch last session |
+| `/api/analyze` | POST | Interpret input; return a goal or a clarifying question. |
+| `/api/plan` | POST | Compile a 3–5 step action plan. |
+| `/api/next-step` | POST | Generate the immediate next step and its duration. |
+| `/api/transcribe` | POST | Convert `{ audio, mimeType }` to transcribed text. |
+| `/api/session` | POST / GET | Upsert the latest flow; fetch the last session. |
 
 ---
 
-## 🎨 Design System
+## Institutional Visual Identity
 
-**Structured Editorial Minimalism** — calm, focused, trustworthy. No shadows, no noise.
+The program's design conventions are governed by **Structured Editorial Minimalism** — a calm, focused, and trustworthy appearance, free of decorative shadow and noise.
 
 | Token | Hex |
 | --- | --- |
-| <span style="color:#2f6db5">Primary</span> | `#2f6db5` |
-| <span style="color:#dce8f5">Primary soft</span> | `#dce8f5` |
-| <span style="color:#f1f0eb">Background</span> | `#f1f0eb` |
-| <span style="color:#171716">Foreground</span> | `#171716` |
-| <span style="color:#676762">Secondary</span> | `#676762` |
-| <span style="color:#969690">Muted</span> | `#969690` |
-| <span style="color:#a33b2e">Danger</span> | `#a33b2e` |
+| Primary | `#2f6db5` |
+| Primary soft | `#dce8f5` |
+| Background | `#f1f0eb` |
+| Foreground | `#171716` |
+| Secondary | `#676762` |
+| Muted | `#969690` |
+| Danger | `#a33b2e` |
 
-Typography: **Inter**, clean hierarchy, generous whitespace, 44px touch targets.
+Typography: **Inter**, clear hierarchy, generous whitespace, and 44px touch targets for accessibility.
 
 ---
 
-## 📚 Documentation
+## Official Records
 
-Product decisions are locked in `docs/` — read these before changing scope:
+Decisions governing the program are preserved in `docs/` and should be consulted before any change of scope:
 
-- [`docs/coldstart.md`](docs/coldstart.md) — **single source of truth**
+- [`docs/coldstart.md`](docs/coldstart.md) — the standing authority
 - `docs/prd.md`, `docs/user-flow.md`, `docs/user-persona.md`
 - `docs/wireframe.md`, `docs/style-and-mood.md`, `docs/techstack.md`
 - `docs/SetupTechStack.md`, `docs/databaseschema..md`
@@ -213,10 +216,8 @@ Product decisions are locked in `docs/` — read these before changing scope:
 
 <div align="center">
 
-> **"You don't need the whole plan. You just need to know what to do next."**
+> *"You don't need the whole plan. You just need to know what to do next."*
 
-<br />
-
-<span style="color:#2f6db5;font-weight:600">NextStep</span> — <span style="color:#676762">From confusion to clarity.</span>
+**NextStep** — *From confusion to clarity.*
 
 </div>

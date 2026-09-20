@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { upsertSession, latestSession } from "@/lib/db";
+import { upsertSession, latestSession, upsertHistory } from "@/lib/db";
 
 export async function POST(req: Request) {
   let sessionKey: string;
@@ -24,6 +24,7 @@ export async function POST(req: Request) {
 
   try {
     await upsertSession(sessionKey, flow);
+    await upsertHistory(sessionKey, flow);
     return NextResponse.json({ ok: true });
   } catch (err) {
     return NextResponse.json(
@@ -33,9 +34,10 @@ export async function POST(req: Request) {
   }
 }
 
-export async function GET() {
+export async function GET(req: Request) {
+  const key = new URL(req.url).searchParams.get("key") ?? undefined;
   try {
-    const row = await latestSession();
+    const row = await latestSession(key);
     return NextResponse.json(
       row ?? { sessionKey: null, flow: null },
     );

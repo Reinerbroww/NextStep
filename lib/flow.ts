@@ -41,6 +41,12 @@ function emit(): void {
   listeners.forEach((cb) => cb());
 }
 
+// Re-pins a restored flow to its original DB row so edits keep updating it.
+export function adoptSession(sessionKey: string): void {
+  if (typeof window === "undefined") return;
+  window.sessionStorage.setItem(SESSION_KEY, sessionKey);
+}
+
 // A stable id for this browser tab so every save updates the same DB row.
 function sessionId(): string {
   const existing = window.sessionStorage.getItem(SESSION_KEY);

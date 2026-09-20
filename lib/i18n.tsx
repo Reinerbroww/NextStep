@@ -126,6 +126,17 @@ export const translations = {
       notSupported:
         "Voice input is not available here. Use Chrome, Edge, or Safari with microphone permission.",
     },
+    history: {
+      title: "History",
+      empty: "No sessions yet.",
+      loading: "Loading...",
+      goalComplete: "Goal complete",
+      stepsDone: "{done} of {total} steps done",
+      nextStep: "Next: {next}",
+      restoreHint: "Open session",
+      clearAll: "Clear all",
+      error: "Couldn't load history.",
+    },
   },
   id: {
     nav: {
@@ -249,6 +260,17 @@ export const translations = {
       languageLabel: "Bahasa",
       notSupported:
         "Input suara tidak tersedia di sini. Gunakan Chrome, Edge, atau Safari dengan izin mikrofon.",
+    },
+    history: {
+      title: "Riwayat",
+      empty: "Belum ada riwayat.",
+      loading: "Memuat...",
+      goalComplete: "Tujuan selesai",
+      stepsDone: "{done} dari {total} langkah selesai",
+      nextStep: "Lanjut: {next}",
+      restoreHint: "Buka sesi",
+      clearAll: "Hapus semua",
+      error: "Tidak dapat memuat riwayat.",
     },
   },
 };

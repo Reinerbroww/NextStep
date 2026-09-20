@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import Button from "@/components/Button";
 import LanguageToggle from "@/components/LanguageToggle";
+import HistoryButton from "@/components/HistoryButton";
 import { useTranslation } from "@/lib/i18n";
 
 type NavLinkProps = {
@@ -48,6 +49,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             <NavLink href="/progress" label={t.nav.progress} />
           </div>
           <div className="flex items-center gap-4">
+            <HistoryButton />
             <LanguageToggle />
             <Button href="/start" variant="primary" size="sm">
               {t.nav.startHere}

@@ -7,6 +7,10 @@ export type PlanStep = {
   title: string;
   description: string;
   status: "completed" | "current" | "up-next";
+  // AI guidance generated while this step was active, kept forever so the
+  // detail can be reopened as-is even after the step is done.
+  nextStep?: string | null;
+  nextStepMinutes?: string | null;
 };
 
 export type FlowState = {
@@ -127,28 +131,54 @@ export function isGoalComplete(state: FlowState): boolean {
 }
 
 // Marks the current step as completed, advances the next step to "current",
-// and resets the AI next-step guidance so it regenerates for the new step.
+// and points the live guidance at the new step's saved answer (if any).
+// Completed steps keep their saved detail so it can be reopened later.
 export function completeCurrentStep(): FlowState | null {
   const current = loadFlow();
   if (!current) return null;
   const plan = current.plan ? current.plan.map((s) => ({ ...s })) : null;
+  let nextCurrent: PlanStep | undefined;
   if (plan) {
     const idx = plan.findIndex((s) => s.status === "current");
     if (idx >= 0) {
       plan[idx].status = "completed";
       if (idx + 1 < plan.length) {
         plan[idx + 1].status = "current";
+        nextCurrent = plan[idx + 1];
       }
     }
   }
   const next: FlowState = {
     ...current,
     plan,
-    nextStep: null,
-    nextStepMinutes: null,
+    nextStep: nextCurrent?.nextStep ?? null,
+    nextStepMinutes: nextCurrent?.nextStepMinutes ?? null,
   };
   saveFlow(next);
   return next;
+}
+
+// Stores the AI guidance on the plan step itself (so it is saved to the
+// database with the flow) and mirrors it to the live fields when it belongs
+// to the step being worked on right now.
+export function attachStepGuidance(
+  state: FlowState,
+  stepNumber: string | undefined,
+  nextStep: string,
+  nextStepMinutes: string,
+): FlowState {
+  const current = currentStepOf(state);
+  const isCurrent = Boolean(current && stepNumber === current.number);
+  const plan =
+    state.plan?.map((s) =>
+      s.number === stepNumber ? { ...s, nextStep, nextStepMinutes } : s,
+    ) ?? null;
+  return {
+    ...state,
+    plan,
+    nextStep: isCurrent || !current ? nextStep : state.nextStep,
+    nextStepMinutes: isCurrent || !current ? nextStepMinutes : state.nextStepMinutes,
+  };
 }
 
 function getSnapshot(): FlowState | null {

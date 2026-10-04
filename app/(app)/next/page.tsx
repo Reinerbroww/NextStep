@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   useFlow,
   loadFlow,
@@ -11,6 +11,7 @@ import {
   clearFlow,
   wasFlowCleared,
   currentStepOf,
+  attachStepGuidance,
   isGoalComplete,
   type FlowState,
   type PlanStep,
@@ -39,8 +40,9 @@ async function fetchNextStep(
   return (await res.json()) as NextStepResult;
 }
 
-export default function NextStepPage() {
+function NextStepView() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const flow = useFlow();
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
@@ -57,7 +59,21 @@ export default function NextStepPage() {
           const data = await res.json();
           if (cancelled) return;
           if (data?.flow && data.flow.goal) {
-            saveFlow(data.flow);
+            const saved = data.flow as FlowState;
+            const cur = currentStepOf(saved);
+            if (cur && saved.nextStep && !cur.nextStep) {
+              // Heal sessions saved before per-step guidance existed.
+              saveFlow(
+                attachStepGuidance(
+                  saved,
+                  cur.number,
+                  saved.nextStep,
+                  saved.nextStepMinutes ?? "",
+                ),
+              );
+            } else {
+              saveFlow(saved);
+            }
           } else {
             router.replace("/start");
           }
@@ -74,7 +90,11 @@ export default function NextStepPage() {
       router.replace("/start");
       return;
     }
-    if (restored.nextStep || isGoalComplete(restored)) return;
+
+    const current = currentStepOf(restored);
+    if (current?.nextStep || restored.nextStep || isGoalComplete(restored)) {
+      return;
+    }
 
     let cancelled = false;
     (async () => {
@@ -82,13 +102,22 @@ export default function NextStepPage() {
         const data = await fetchNextStep(
           restored.goal,
           (restored.plan ?? []).map((s: PlanStep) => s.title),
-          currentStepOf(restored)?.title,
+          current?.title,
         );
         if (cancelled) return;
-        saveFlow({ ...restored, nextStep: data.nextStep, nextStepMinutes: data.minutes });
+        saveFlow(
+          attachStepGuidance(
+            restored,
+            current?.number,
+            data.nextStep,
+            data.minutes,
+          ),
+        );
       } catch (err) {
         if (!cancelled) {
-          setError(err instanceof Error ? err.message : "Something went wrong.");
+          setError(
+            err instanceof Error ? err.message : "Something went wrong.",
+          );
         }
       }
     })();
@@ -109,19 +138,34 @@ export default function NextStepPage() {
 
   const plan = flow.plan ?? [];
   const allDone = isGoalComplete(flow);
-  const currentIdx = plan.findIndex((s) => s.status === "current");
+  const current = currentStepOf(flow);
+  const stepParam = searchParams.get("step");
+  const target =
+    plan.find((s) => s.number === stepParam) ?? current ?? plan[0] ?? undefined;
+  const isCurrentTarget = target ? target.number === current?.number : true;
+
+  const guidance =
+    isCurrentTarget && !target?.nextStep
+      ? (flow.nextStep ?? null)
+      : (target?.nextStep ?? null);
+  const minutes =
+    isCurrentTarget && !target?.nextStepMinutes
+      ? (flow.nextStepMinutes ?? null)
+      : (target?.nextStepMinutes ?? null);
+
   const stepMarker =
-    plan.length > 0 && currentIdx >= 0
-      ? `${String(currentIdx + 1).padStart(2, "0")} / ${String(plan.length).padStart(2, "0")}`
+    plan.length > 0 && target
+      ? `${String(Number(target.number)).padStart(2, "0")} / ${String(plan.length).padStart(2, "0")}`
       : "";
 
   async function generate(state: FlowState): Promise<void> {
+    const cur = currentStepOf(state);
     const data = await fetchNextStep(
       state.goal,
       (state.plan ?? []).map((s: PlanStep) => s.title),
-      currentStepOf(state)?.title,
+      cur?.title,
     );
-    saveFlow({ ...state, nextStep: data.nextStep, nextStepMinutes: data.minutes });
+    saveFlow(attachStepGuidance(state, cur?.number, data.nextStep, data.minutes));
   }
 
   async function handleMarkDone() {
@@ -165,7 +209,7 @@ export default function NextStepPage() {
     router.push("/start");
   }
 
-  const loading = !flow.nextStep && !allDone;
+  const loading = !allDone && isCurrentTarget && !guidance;
 
   return (
     <div className="mx-auto flex w-full max-w-[720px] flex-col py-16">
@@ -182,6 +226,32 @@ export default function NextStepPage() {
           </span>
         ) : null}
       </nav>
+
+      {plan.length > 1 ? (
+        <nav aria-label="Steps" className="mt-8 flex flex-wrap items-center gap-2">
+          {plan.map((s) => {
+            const active = s.number === target?.number;
+            return (
+              <Link
+                key={s.number}
+                href={s.number === current?.number ? "/next" : `/next?step=${encodeURIComponent(s.number)}`}
+                aria-label={`Step ${s.number}`}
+                className={`inline-flex h-9 min-w-9 items-center justify-center rounded-md border px-2 text-xs font-semibold transition-colors ${
+                  active
+                    ? "border-primary bg-primary text-white"
+                    : s.status === "completed"
+                      ? "border-border bg-surface-light text-muted line-through"
+                      : s.number === current?.number
+                        ? "border-primary/60 text-primary"
+                        : "border-border text-secondary hover:border-primary hover:text-primary"
+                }`}
+              >
+                {s.number}
+              </Link>
+            );
+          })}
+        </nav>
+      ) : null}
 
       <div className="mt-16">
         <p className="text-xs font-semibold uppercase tracking-widest text-muted">
@@ -201,15 +271,25 @@ export default function NextStepPage() {
           <h1 className="mt-6 text-4xl font-bold leading-tight tracking-tight text-foreground sm:text-5xl">
             All steps are complete.
           </h1>
-        ) : (
+        ) : guidance ? (
           <h1 className="mt-6 text-4xl font-bold leading-tight tracking-tight text-foreground sm:text-5xl">
-            {flow.nextStep}
+            {guidance}
           </h1>
-        )}
+        ) : target ? (
+          <>
+            <h1 className="mt-6 text-2xl font-semibold tracking-tight text-foreground">
+              {target.title}
+            </h1>
+            <p className="mt-4 text-sm leading-6 text-secondary">
+              This step hasn&apos;t been started yet — return here when it&apos;s
+              your turn to get your next step.
+            </p>
+          </>
+        ) : null}
 
-        {!allDone && flow.nextStepMinutes && !loading ? (
+        {!allDone && minutes && !loading ? (
           <p className="mt-8 text-xs font-semibold uppercase tracking-widest text-muted">
-            {flow.nextStepMinutes} minutes
+            {minutes} minutes
           </p>
         ) : null}
 
@@ -240,7 +320,7 @@ export default function NextStepPage() {
               Start a new session
             </Link>
           </div>
-        ) : (
+        ) : isCurrentTarget ? (
           <>
             <button
               onClick={handleMarkDone}
@@ -274,8 +354,16 @@ export default function NextStepPage() {
               </p>
             )}
           </>
-        )}
+        ) : null}
       </div>
     </div>
+  );
+}
+
+export default function NextStepPage() {
+  return (
+    <Suspense fallback={null}>
+      <NextStepView />
+    </Suspense>
   );
 }

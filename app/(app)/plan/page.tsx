@@ -52,40 +52,66 @@ export default function PlanPage() {
         </div>
       ) : (
         <div className="mt-10 divide-y divide-border border-y border-border">
-          {steps.map((step) => (
-            <div key={step.number} className="flex items-baseline gap-6 py-6">
-              <span className="text-sm font-semibold text-muted">
-                {step.number}
-              </span>
-              <div className="flex flex-1 flex-col gap-1">
-                <span
-                  className={`text-xs font-semibold uppercase tracking-widest ${
-                    step.status === "current" ? "text-primary" : "text-muted"
-                  }`}
-                >
-                  {step.status === "completed"
-                    ? "Completed"
-                    : step.status === "current"
-                      ? "Current"
-                      : "Up next"}
+          {steps.map((step) => {
+            const href =
+              step.status === "current"
+                ? "/next"
+                : `/next?step=${encodeURIComponent(step.number)}`;
+            const inner = (
+              <>
+                <span className="text-sm font-semibold text-muted">
+                  {step.number}
                 </span>
-                <span
-                  className={`text-lg font-medium leading-7 ${
-                    step.status === "completed"
-                      ? "text-muted line-through"
-                      : "text-foreground"
-                  }`}
-                >
-                  {step.title}
-                </span>
-                {step.description ? (
-                  <span className="text-sm leading-6 text-secondary">
-                    {step.description}
+                <div className="flex flex-1 flex-col gap-1">
+                  <span
+                    className={`text-xs font-semibold uppercase tracking-widest ${
+                      step.status === "current" ? "text-primary" : "text-muted"
+                    }`}
+                  >
+                    {step.status === "completed"
+                      ? "Completed"
+                      : step.status === "current"
+                        ? "Current"
+                        : "Up next"}
+                  </span>
+                  <span
+                    className={`text-lg font-medium leading-7 ${
+                      step.status === "completed"
+                        ? "text-muted line-through"
+                        : "text-foreground"
+                    }`}
+                  >
+                    {step.title}
+                  </span>
+                  {step.description ? (
+                    <span className="text-sm leading-6 text-secondary">
+                      {step.description}
+                    </span>
+                  ) : null}
+                </div>
+                {step.nextStep ? (
+                  <span className="shrink-0 text-xs font-semibold uppercase tracking-widest text-secondary">
+                    View detail
                   </span>
                 ) : null}
+              </>
+            );
+            return (
+              <div key={step.number} className="flex items-baseline gap-6 py-6">
+                {step.nextStep ? (
+                  <Link
+                    href={href}
+                    title="View saved detail"
+                    className="group flex w-full items-baseline gap-6 text-left transition-opacity hover:opacity-80"
+                  >
+                    {inner}
+                  </Link>
+                ) : (
+                  inner
+                )}
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
 
